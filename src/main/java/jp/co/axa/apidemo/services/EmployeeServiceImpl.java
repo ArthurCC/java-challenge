@@ -1,15 +1,17 @@
 package jp.co.axa.apidemo.services;
 
-import jp.co.axa.apidemo.entities.Employee;
-import jp.co.axa.apidemo.repositories.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jp.co.axa.apidemo.entities.Employee;
+import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
+import jp.co.axa.apidemo.repositories.EmployeeRepository;
+
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -28,15 +30,22 @@ public class EmployeeServiceImpl implements EmployeeService{
         return optEmp.get();
     }
 
-    public void saveEmployee(Employee employee){
+    public void saveEmployee(Employee employee) {
         employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(Long employeeId){
+    public void deleteEmployee(Long employeeId) {
         employeeRepository.deleteById(employeeId);
     }
 
-    public void updateEmployee(Employee employee) {
-        employeeRepository.save(employee);
+    public void updateEmployee(Long employeeId, Employee employee) throws ResourceNotFoundException {
+        Employee employeeDB = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
+
+        employeeDB.setName(employee.getName());
+        employeeDB.setSalary(employee.getSalary());
+        employeeDB.setDepartment(employee.getDepartment());
+
+        employeeRepository.save(employeeDB);
     }
 }
