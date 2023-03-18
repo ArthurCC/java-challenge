@@ -25,17 +25,9 @@ public class CustomExceptionHandler {
         @ExceptionHandler(ResourceNotFoundException.class)
         public ResponseEntity<Response<Void>> handleResourceNotFound(ResourceNotFoundException ex,
                         HttpServletRequest request) {
-                String errorMessage = String.format(
-                                "Resource not found [method=%s][path=%s] : %s",
-                                request.getMethod(),
-                                request.getRequestURI(),
-                                ex.getMessage());
 
-                LOGGER.error(errorMessage, ex);
-
-                return new ResponseEntity<>(
-                                new Response<>(LocalDateTime.now(), HttpStatus.NOT_FOUND, errorMessage),
-                                HttpStatus.NOT_FOUND);
+                return buildErrorResponse(
+                                ex, request, HttpStatus.NOT_FOUND, "Resource not found");
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -50,40 +42,31 @@ public class CustomExceptionHandler {
                                 .map(err -> String.format("%s %s", err.getField(), err.getDefaultMessage()))
                                 .collect(Collectors.joining(","));
 
-                String errorMessage = String.format(
-                                "Invalid parameters [method=%s][path=%s] : %s",
-                                request.getMethod(),
-                                request.getRequestURI(),
-                                fieldErrorMessages);
-
-                LOGGER.error(errorMessage, ex);
-
-                return new ResponseEntity<>(
-                                new Response<>(LocalDateTime.now(), HttpStatus.BAD_REQUEST, errorMessage),
-                                HttpStatus.BAD_REQUEST);
+                return buildErrorResponse(
+                                ex, request, HttpStatus.BAD_REQUEST, fieldErrorMessages);
         }
 
         @ExceptionHandler(MethodArgumentTypeMismatchException.class)
         public ResponseEntity<Response<Void>> handleMethodArgumentTypeMismatchException(RuntimeException ex,
                         HttpServletRequest request) {
-                String errorMessage = String.format(
-                                "Parameter conversion error [method=%s][path=%s] : %s",
-                                request.getMethod(),
-                                request.getRequestURI(),
-                                ex.getMessage());
 
-                LOGGER.error(errorMessage, ex);
-
-                return new ResponseEntity<>(
-                                new Response<>(LocalDateTime.now(), HttpStatus.BAD_REQUEST, errorMessage),
-                                HttpStatus.BAD_REQUEST);
+                return buildErrorResponse(
+                                ex, request, HttpStatus.BAD_REQUEST, "Parameter conversion error");
         }
 
         @ExceptionHandler(Exception.class)
         public ResponseEntity<Response<Void>> handleException(Exception ex,
                         HttpServletRequest request) {
+
+                return buildErrorResponse(
+                                ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server error");
+        }
+
+        private ResponseEntity<Response<Void>> buildErrorResponse(Exception ex,
+                        HttpServletRequest request, HttpStatus httpStatus, String customMessage) {
                 String errorMessage = String.format(
-                                "Internal Server error [method=%s][path=%s] : %s",
+                                "%s [method=%s][path=%s] : %s",
+                                customMessage,
                                 request.getMethod(),
                                 request.getRequestURI(),
                                 ex.getMessage());
@@ -91,7 +74,7 @@ public class CustomExceptionHandler {
                 LOGGER.error(errorMessage, ex);
 
                 return new ResponseEntity<>(
-                                new Response<>(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR, errorMessage),
-                                HttpStatus.INTERNAL_SERVER_ERROR);
+                                new Response<>(LocalDateTime.now(), httpStatus, errorMessage),
+                                httpStatus);
         }
 }
