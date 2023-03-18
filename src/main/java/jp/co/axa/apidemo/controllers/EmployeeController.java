@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jp.co.axa.apidemo.entities.Employee;
 import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
+import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.services.EmployeeService;
 
 @RestController
@@ -30,18 +30,19 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> getEmployees() {
+    public List<EmployeeDto> getEmployees() {
         return employeeService.retrieveEmployees();
     }
 
     @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable(name = "employeeId") Long employeeId) {
+    public EmployeeDto getEmployee(@PathVariable(name = "employeeId") Long employeeId)
+            throws ResourceNotFoundException {
         return employeeService.getEmployee(employeeId);
     }
 
     @PostMapping("/employees")
-    public void saveEmployee(@RequestBody Employee employee) {
-        employeeService.saveEmployee(employee);
+    public void saveEmployee(@RequestBody EmployeeDto employeeDto) {
+        employeeService.saveEmployee(employeeDto);
         LOGGER.info("Employee Saved Successfully");
     }
 
@@ -52,9 +53,9 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees/{employeeId}")
-    public void updateEmployee(@RequestBody Employee employee,
+    public void updateEmployee(@RequestBody EmployeeDto employeeDto,
             @PathVariable(name = "employeeId") Long employeeId) throws ResourceNotFoundException {
-        employeeService.updateEmployee(employeeId, employee);
+        employeeService.updateEmployee(employeeId, employeeDto);
         LOGGER.info("Employee updated successfully");
     }
 }
