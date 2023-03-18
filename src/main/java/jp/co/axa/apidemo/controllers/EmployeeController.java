@@ -47,7 +47,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public void deleteEmployee(@PathVariable(name = "employeeId") Long employeeId) {
+    public void deleteEmployee(@PathVariable(name = "employeeId") Long employeeId) throws ResourceNotFoundException {
         employeeService.deleteEmployee(employeeId);
         LOGGER.info("Employee Deleted Successfully");
     }

@@ -41,8 +41,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employeeMapper.populateEntity(new Employee(), employeeDto));
     }
 
-    public void deleteEmployee(Long employeeId) {
-        employeeRepository.deleteById(employeeId);
+    public void deleteEmployee(Long employeeId) throws ResourceNotFoundException {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
+
+        employeeRepository.delete(employee);
     }
 
     public void updateEmployee(Long employeeId, EmployeeDto employeeDto) throws ResourceNotFoundException {
