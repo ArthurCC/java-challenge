@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableMap;
 
-import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
 import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.model.Response;
 import jp.co.axa.apidemo.services.EmployeeService;
@@ -39,23 +38,26 @@ public class EmployeeController {
 
     @GetMapping("/employees")
     public ResponseEntity<Response<List<EmployeeDto>>> getEmployees() {
+        List<EmployeeDto> employees = employeeService.retrieveEmployees();
+        LOGGER.info("Employees retrieved successfully");
+
         return ResponseEntity.ok(
                 new Response<>(
                         LocalDateTime.now(),
                         HttpStatus.OK,
-                        ImmutableMap.of("employees", employeeService.retrieveEmployees())));
+                        ImmutableMap.of("employees", employees)));
     }
 
     @GetMapping("/employees/{employeeId}")
-    public ResponseEntity<Response<EmployeeDto>> getEmployee(@PathVariable Long employeeId)
-            throws ResourceNotFoundException {
+    public ResponseEntity<Response<EmployeeDto>> getEmployee(@PathVariable Long employeeId) {
+        EmployeeDto employee = employeeService.getEmployee(employeeId);
+        LOGGER.info("Employee retrieved successfully");
 
         return ResponseEntity.ok(
                 new Response<>(
                         LocalDateTime.now(),
                         HttpStatus.OK,
-                        ImmutableMap.of("employee", employeeService.getEmployee(employeeId))));
-        // return employeeService.getEmployee(employeeId);
+                        ImmutableMap.of("employee", employee)));
     }
 
     @PostMapping("/employees")
@@ -73,8 +75,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable Long employeeId)
-            throws ResourceNotFoundException {
+    public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable Long employeeId) {
         employeeService.deleteEmployee(employeeId);
         LOGGER.info("Employee Deleted Successfully");
 
@@ -85,8 +86,7 @@ public class EmployeeController {
     @PutMapping("/employees/{employeeId}")
     public ResponseEntity<Response<EmployeeDto>> updateEmployee(
             @RequestBody @Valid EmployeeDto employeeDto,
-            @PathVariable Long employeeId)
-            throws ResourceNotFoundException {
+            @PathVariable Long employeeId) {
         EmployeeDto updatedEmployee = employeeService.updateEmployee(employeeId, employeeDto);
         LOGGER.info("Employee updated successfully");
 

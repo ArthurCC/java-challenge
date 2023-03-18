@@ -30,7 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public EmployeeDto getEmployee(Long employeeId) throws ResourceNotFoundException {
+    public EmployeeDto getEmployee(Long employeeId) {
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
@@ -43,14 +43,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toDto(employee);
     }
 
-    public void deleteEmployee(Long employeeId) throws ResourceNotFoundException {
+    public void deleteEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
 
         employeeRepository.delete(employee);
     }
 
-    public EmployeeDto updateEmployee(Long employeeId, EmployeeDto employeeDto) throws ResourceNotFoundException {
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeDto employeeDto) {
         Employee employeeDB = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
 
