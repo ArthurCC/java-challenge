@@ -36,9 +36,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
     }
 
-    public void saveEmployee(EmployeeDto employeeDto) {
-        employeeRepository.save(
+    public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
+        Employee employee = employeeRepository.save(
                 employeeMapper.populateEntity(new Employee(), employeeDto));
+
+        return employeeMapper.toDto(employee);
     }
 
     public void deleteEmployee(Long employeeId) throws ResourceNotFoundException {
@@ -48,11 +50,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(employee);
     }
 
-    public void updateEmployee(Long employeeId, EmployeeDto employeeDto) throws ResourceNotFoundException {
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeDto employeeDto) throws ResourceNotFoundException {
         Employee employeeDB = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
 
-        employeeRepository.save(
+        employeeDB = employeeRepository.save(
                 employeeMapper.populateEntity(employeeDB, employeeDto));
+
+        return employeeMapper.toDto(employeeDB);
     }
 }
