@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
 import jp.co.axa.apidemo.model.Response;
@@ -62,11 +63,11 @@ public class CustomExceptionHandler {
                                 HttpStatus.BAD_REQUEST);
         }
 
-        @ExceptionHandler(NumberFormatException.class)
-        public ResponseEntity<Response<Void>> handleNumberFormatException(NumberFormatException ex,
+        @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+        public ResponseEntity<Response<Void>> handleMethodArgumentTypeMismatchException(RuntimeException ex,
                         HttpServletRequest request) {
                 String errorMessage = String.format(
-                                "Path variable is not a number [method=%s][path=%s] : %s",
+                                "Parameter conversion error [method=%s][path=%s] : %s",
                                 request.getMethod(),
                                 request.getRequestURI(),
                                 ex.getMessage());
@@ -76,5 +77,21 @@ public class CustomExceptionHandler {
                 return new ResponseEntity<>(
                                 new Response<>(LocalDateTime.now(), HttpStatus.BAD_REQUEST, errorMessage),
                                 HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<Response<Void>> handleException(Exception ex,
+                        HttpServletRequest request) {
+                String errorMessage = String.format(
+                                "Internal Server error [method=%s][path=%s] : %s",
+                                request.getMethod(),
+                                request.getRequestURI(),
+                                ex.getMessage());
+
+                LOGGER.error(errorMessage, ex);
+
+                return new ResponseEntity<>(
+                                new Response<>(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR, errorMessage),
+                                HttpStatus.INTERNAL_SERVER_ERROR);
         }
 }

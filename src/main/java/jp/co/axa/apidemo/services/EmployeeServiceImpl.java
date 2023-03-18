@@ -1,8 +1,11 @@
 package jp.co.axa.apidemo.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jp.co.axa.apidemo.entities.Employee;
@@ -23,9 +26,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeMapper = employeeMapper;
     }
 
-    public List<EmployeeDto> retrieveEmployees() {
-        return employeeRepository.findAll()
-                .stream()
+    public List<EmployeeDto> retrieveEmployees(Optional<Integer> page) {
+        List<Employee> employees;
+        if (page.isPresent()) {
+            // first page is 0 so we substract 1
+            Pageable pageable = PageRequest.of(page.get() - 1, 3);
+            employees = employeeRepository.findAll(pageable)
+                    .getContent();
+        } else {
+            employees = employeeRepository.findAll();
+        }
+
+        return employees.stream()
                 .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
     }
