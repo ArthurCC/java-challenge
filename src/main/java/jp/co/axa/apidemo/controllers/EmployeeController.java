@@ -3,6 +3,8 @@ package jp.co.axa.apidemo.controllers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/{employeeId}")
-    public ResponseEntity<Response<EmployeeDto>> getEmployee(@PathVariable(name = "employeeId") Long employeeId)
+    public ResponseEntity<Response<EmployeeDto>> getEmployee(@PathVariable Long employeeId)
             throws ResourceNotFoundException {
 
         return ResponseEntity.ok(
@@ -57,7 +59,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees")
-    public ResponseEntity<Response<EmployeeDto>> saveEmployee(@RequestBody EmployeeDto employeeDto) {
+    public ResponseEntity<Response<EmployeeDto>> saveEmployee(
+            @RequestBody @Valid EmployeeDto employeeDto) {
         EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto);
         LOGGER.info("Employee Saved Successfully");
 
@@ -70,7 +73,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable(name = "employeeId") Long employeeId)
+    public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable Long employeeId)
             throws ResourceNotFoundException {
         employeeService.deleteEmployee(employeeId);
         LOGGER.info("Employee Deleted Successfully");
@@ -81,8 +84,8 @@ public class EmployeeController {
 
     @PutMapping("/employees/{employeeId}")
     public ResponseEntity<Response<EmployeeDto>> updateEmployee(
-            @RequestBody EmployeeDto employeeDto,
-            @PathVariable(name = "employeeId") Long employeeId)
+            @RequestBody @Valid EmployeeDto employeeDto,
+            @PathVariable Long employeeId)
             throws ResourceNotFoundException {
         EmployeeDto updatedEmployee = employeeService.updateEmployee(employeeId, employeeDto);
         LOGGER.info("Employee updated successfully");
