@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,7 +64,7 @@ public class EmployeeController {
         }
 
         @PostMapping("/employees")
-        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<EmployeeDto>> saveEmployee(
                         @RequestBody @Valid EmployeeDto employeeDto) {
                 EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto);
@@ -80,7 +79,7 @@ public class EmployeeController {
         }
 
         @DeleteMapping("/employees/{employeeId}")
-        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable Long employeeId) {
                 employeeService.deleteEmployee(employeeId);
                 LOGGER.info("Employee Deleted Successfully");
@@ -90,7 +89,7 @@ public class EmployeeController {
         }
 
         @PutMapping("/employees/{employeeId}")
-        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<EmployeeDto>> updateEmployee(
                         @RequestBody @Valid EmployeeDto employeeDto,
                         @PathVariable Long employeeId) {

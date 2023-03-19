@@ -30,7 +30,11 @@ public class CustomErrorController implements ErrorController {
             HttpServletRequest request, HttpServletResponse response) {
 
         if (response.getStatus() == 401) {
-            return handleAuthenticationError(request);
+            return buildErrorResponse(request, "Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (response.getStatus() == 403) {
+            return buildErrorResponse(request, "Forbidden", HttpStatus.FORBIDDEN);
         }
 
         String errorMessage = String.format(
@@ -38,20 +42,16 @@ public class CustomErrorController implements ErrorController {
                 request.getMethod(),
                 request.getRequestURI());
 
-        LOGGER.error(errorMessage);
-
-        return new ResponseEntity<>(
-                new Response<>(LocalDateTime.now(), HttpStatus.NOT_FOUND, errorMessage),
-                HttpStatus.NOT_FOUND);
+        return buildErrorResponse(request, errorMessage, HttpStatus.NOT_FOUND);
     }
 
-    private ResponseEntity<Response<Void>> handleAuthenticationError(HttpServletRequest request) {
-        String errorMessage = "Unauthorized";
+    private ResponseEntity<Response<Void>> buildErrorResponse(HttpServletRequest request,
+            String errorMessage, HttpStatus httpStatus) {
 
         LOGGER.error(errorMessage);
 
         return new ResponseEntity<>(
-                new Response<>(LocalDateTime.now(), HttpStatus.UNAUTHORIZED, errorMessage),
-                HttpStatus.UNAUTHORIZED);
+                new Response<>(LocalDateTime.now(), httpStatus, errorMessage),
+                httpStatus);
     }
 }
