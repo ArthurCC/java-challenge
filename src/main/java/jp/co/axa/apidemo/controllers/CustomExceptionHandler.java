@@ -46,9 +46,12 @@ public class CustomExceptionHandler {
                                 ex, request, HttpStatus.BAD_REQUEST, fieldErrorMessages);
         }
 
-        @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+        @ExceptionHandler({
+                        MethodArgumentTypeMismatchException.class,
+                        IllegalArgumentException.class
+        })
         public ResponseEntity<Response<Void>> handleMethodArgumentTypeMismatchException(
-                        MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+                        RuntimeException ex, HttpServletRequest request) {
 
                 return buildErrorResponse(
                                 ex, request, HttpStatus.BAD_REQUEST, "Parameter conversion error");

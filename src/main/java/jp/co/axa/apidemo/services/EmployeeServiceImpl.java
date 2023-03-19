@@ -4,7 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +23,8 @@ import jp.co.axa.apidemo.repositories.EmployeeRepository;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
@@ -32,6 +40,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.pageSize = pageSize;
     }
 
+    // Since there is no control on page argument, we don't want to cache if page is
+    // specified and result is empty because some malicious user could overload the
+    // cache by sending multiple requests increasing the page every time
+    @Cacheable(value = "employees", key = "#page", unless = "#page.isPresent() and #result.isEmpty()")
     public List<EmployeeDto> retrieveEmployees(Optional<Integer> page) {
         List<Employee> employees;
         if (page.isPresent()) {
@@ -43,17 +55,25 @@ public class EmployeeServiceImpl implements EmployeeService {
             employees = employeeRepository.findAll();
         }
 
+        LOGGER.info("Retrieving employees from DB...");
+
         return employees.stream()
                 .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "employee", key = "#employeeId")
     public EmployeeDto getEmployee(Long employeeId) {
+
+        LOGGER.info("Retrieving employee from DB...");
+
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
     }
 
+    @CachePut(value = "employee", key = "#result.id")
+    @CacheEvict(value = "employees", allEntries = true)
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
         Employee employee = employeeRepository.save(
                 employeeMapper.populateEntity(new Employee(), employeeDto));
@@ -61,6 +81,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toDto(employee);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "employee", key = "#employeeId"),
+            @CacheEvict(value = "employees", allEntries = true)
+    })
     public void deleteEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
@@ -68,6 +92,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(employee);
     }
 
+    @CachePut(value = "employee", key = "#result.id")
+    @CacheEvict(value = "employees", allEntries = true)
     public EmployeeDto updateEmployee(Long employeeId, EmployeeDto employeeDto) {
         Employee employeeDB = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist"));
