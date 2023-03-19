@@ -1,4 +1,4 @@
-package jp.co.axa.apidemo.services;
+package jp.co.axa.apidemo.services.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +20,7 @@ import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
 import jp.co.axa.apidemo.mappers.EmployeeMapper;
 import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.repositories.EmployeeRepository;
+import jp.co.axa.apidemo.services.EmployeeService;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {

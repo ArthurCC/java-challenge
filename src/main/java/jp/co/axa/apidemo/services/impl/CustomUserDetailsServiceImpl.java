@@ -1,4 +1,4 @@
-package jp.co.axa.apidemo.services;
+package jp.co.axa.apidemo.services.impl;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
