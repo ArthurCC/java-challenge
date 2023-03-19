@@ -3,6 +3,7 @@ package jp.co.axa.apidemo.controllers;
 import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,13 @@ public class CustomErrorController implements ErrorController {
     }
 
     @RequestMapping("/error")
-    public ResponseEntity<Response<Void>> error(HttpServletRequest request) {
+    public ResponseEntity<Response<Void>> error(
+            HttpServletRequest request, HttpServletResponse response) {
+
+        if (response.getStatus() == 401) {
+            return handleAuthenticationError(request);
+        }
+
         String errorMessage = String.format(
                 "No handler found [method=%s][path=%s]",
                 request.getMethod(),
@@ -36,5 +43,15 @@ public class CustomErrorController implements ErrorController {
         return new ResponseEntity<>(
                 new Response<>(LocalDateTime.now(), HttpStatus.NOT_FOUND, errorMessage),
                 HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<Response<Void>> handleAuthenticationError(HttpServletRequest request) {
+        String errorMessage = "Unauthorized";
+
+        LOGGER.error(errorMessage);
+
+        return new ResponseEntity<>(
+                new Response<>(LocalDateTime.now(), HttpStatus.UNAUTHORIZED, errorMessage),
+                HttpStatus.UNAUTHORIZED);
     }
 }

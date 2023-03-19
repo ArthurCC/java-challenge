@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,11 +48,19 @@ public class CustomExceptionHandler {
         }
 
         @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-        public ResponseEntity<Response<Void>> handleMethodArgumentTypeMismatchException(RuntimeException ex,
-                        HttpServletRequest request) {
+        public ResponseEntity<Response<Void>> handleMethodArgumentTypeMismatchException(
+                        MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
                 return buildErrorResponse(
                                 ex, request, HttpStatus.BAD_REQUEST, "Parameter conversion error");
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<Response<Void>> handleAccessDeniedException(AccessDeniedException ex,
+                        HttpServletRequest request) {
+
+                return buildErrorResponse(
+                                ex, request, HttpStatus.FORBIDDEN, "Forbidden");
         }
 
         @ExceptionHandler(Exception.class)
