@@ -1,6 +1,9 @@
 package jp.co.axa.apidemo.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,12 +17,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.google.common.collect.Lists;
+
+import jp.co.axa.apidemo.entities.User;
 import jp.co.axa.apidemo.enumeration.UserRole;
+import jp.co.axa.apidemo.repositories.UserRepository;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     private final UserDetailsService userDetailsService;
     private final boolean enableSecurity;
@@ -70,5 +79,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ApplicationRunner createFakeUsersRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return args -> {
+            userRepository.saveAll(
+                    Lists.newArrayList(
+                            new User(
+                                    "james",
+                                    passwordEncoder.encode("admin"),
+                                    "ROLE_" + UserRole.ADMIN),
+                            new User(
+                                    "bob",
+                                    passwordEncoder.encode("user"),
+                                    "ROLE_" + UserRole.USER)));
+
+            LOGGER.info(
+                    "Created fake users for authentication : ADMIN[username=james,password=admin] USER[username=bob,password=user]");
+        };
     }
 }
