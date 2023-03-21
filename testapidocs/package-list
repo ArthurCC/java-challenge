@@ -1,0 +1,5 @@
+jp.co.axa.apidemo
+jp.co.axa.apidemo.controllers
+jp.co.axa.apidemo.mappers
+jp.co.axa.apidemo.repositories
+jp.co.axa.apidemo.services.impl
