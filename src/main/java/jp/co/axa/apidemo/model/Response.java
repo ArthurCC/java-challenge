@@ -43,6 +43,17 @@ public class Response<T> {
     private final Map<String, T> data;
 
     /**
+     * Default constructor for Integration test deserialization
+     */
+    public Response() {
+        this.timestamp = null;
+        this.statusCode = 0;
+        this.statusMessage = null;
+        this.errorMessage = null;
+        this.data = null;
+    }
+
+    /**
      * Response OK constructor
      * 
      * @param timestamp timestamp
