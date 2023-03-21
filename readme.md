@@ -48,8 +48,8 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 
 #### Features added to this project
 
--   Add Unit tests
--   Secure endpoints with Spring Security and JPA using http basic
+-   Add Unit tests and Integration tests
+-   Secure endpoints with Spring Security and JPA using http basic authentication
 -   In memory cache for retrieving employees
 -   Swagger documentation
 -   JavaDoc and documentation site
@@ -64,7 +64,7 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 
 -   Implement JWT authentication
 -   Make employee.department another table to showcase entity relational mapping
--   Add end to end Integration tests with @SpringBootTest
+-   Test pagination and error responses in EmployeeIntegrationTest
 -   Containerize with Docker
 -   Connect to an external DB like Postgres running in a docker container
 
