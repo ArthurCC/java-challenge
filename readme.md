@@ -44,10 +44,7 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 
 #### Your experience in Java
 
-Please let us know more about your Java experience in a few sentences. For example:
-
--   I have about 4 years of experience developing Java web applications using Spring.
--   I have about 2 years of hands on experience with Spring Boot.
+-   I have about 4 years of experience developing Java web applications using Spring and 2 years of hands-on experience with Spring Boot.
 
 #### Features added to this project
 
