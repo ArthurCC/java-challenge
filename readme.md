@@ -83,7 +83,7 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 
 #### Notes
 
--   Two fake users are being created on startup. You can use their credentials to access endpoints.
+-   Two fake users are being created on startup for basic authentication. You can use their credentials to access endpoints.
     -   role ADMIN{username=james,password=admin} : Can perform every request
     -   role USER{username=bob,password=user} : Can only consult data (GET operations)
 -   Project documentation site is accessible here : https://arthurcc.github.io/java-challenge/
