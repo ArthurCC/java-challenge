@@ -74,7 +74,7 @@ Please let us know more about your Java experience in a few sentences. For examp
 #### Problems remaining
 
 -   Documenting generic Response type with Swagger
--   Swagger UI displaying but generating error logs in console
+-   Swagger UI displaying but generating NoHandlerFound error resulting in error logs in console
 -   Unable to publish site to github with maven-scm-publish-plugin (pushed gh-pages branch manually)
 
 ### About this application
