@@ -25,7 +25,7 @@ import jp.co.axa.apidemo.repositories.UserRepository;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true) // TODO : might not need that anymore
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
@@ -77,12 +77,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public ApplicationRunner createFakeUsersRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    ApplicationRunner createFakeUsersRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             userRepository.saveAll(
                     Lists.newArrayList(

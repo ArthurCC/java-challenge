@@ -18,10 +18,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.model.Response;
 import jp.co.axa.apidemo.services.EmployeeService;
@@ -38,6 +44,13 @@ public class EmployeeController {
                 this.employeeService = employeeService;
         }
 
+        @ApiOperation(value = "Retrieve a list of employees", notes = "Can provide the page number as request parameter")
+        @ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "page number with first page being 0")
+        @ApiResponses({
+                        @ApiResponse(code = 200, message = "OK", response = Response.class),
+                        @ApiResponse(code = 400, message = "Invalid page parameter"),
+                        @ApiResponse(code = 401, message = "Unauthorized")
+        })
         @GetMapping("/employees")
         public ResponseEntity<Response<List<EmployeeDto>>> getEmployees(
                         @RequestParam Optional<Integer> page) {
@@ -51,6 +64,14 @@ public class EmployeeController {
                                                 ImmutableMap.of("employees", employees)));
         }
 
+        @ApiOperation(value = "Retrieve an employee by id")
+        @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true)
+        @ApiResponses({
+                        @ApiResponse(code = 200, message = "OK", response = Response.class),
+                        @ApiResponse(code = 400, message = "Invalid id parameter"),
+                        @ApiResponse(code = 401, message = "Unauthorized"),
+                        @ApiResponse(code = 404, message = "Employee not found")
+        })
         @GetMapping("/employees/{employeeId}")
         public ResponseEntity<Response<EmployeeDto>> getEmployee(@PathVariable Long employeeId) {
                 EmployeeDto employee = employeeService.getEmployee(employeeId);
@@ -63,8 +84,16 @@ public class EmployeeController {
                                                 ImmutableMap.of("employee", employee)));
         }
 
+        @ApiOperation(value = "Create a new employee", notes = "Return created employee data")
+        @ApiImplicitParam(name = "employeeDto", dataType = "EmployeeDto", paramType = "body", value = "employee data", required = true)
+        @ApiResponses({
+                        @ApiResponse(code = 201, message = "OK", response = Response.class),
+                        @ApiResponse(code = 400, message = "Invalid body"),
+                        @ApiResponse(code = 401, message = "Unauthorized"),
+                        @ApiResponse(code = 403, message = "Forbidden")
+        })
+        @ResponseStatus(code = HttpStatus.CREATED)
         @PostMapping("/employees")
-        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<EmployeeDto>> saveEmployee(
                         @RequestBody @Valid EmployeeDto employeeDto) {
                 EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto);
@@ -78,8 +107,16 @@ public class EmployeeController {
                                 HttpStatus.CREATED);
         }
 
+        @ApiOperation(value = "Delete an employee by id")
+        @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true)
+        @ApiResponses({
+                        @ApiResponse(code = 200, message = "OK", response = Response.class),
+                        @ApiResponse(code = 400, message = "Invalid body"),
+                        @ApiResponse(code = 401, message = "Unauthorized"),
+                        @ApiResponse(code = 403, message = "Forbidden"),
+                        @ApiResponse(code = 404, message = "Employee not found")
+        })
         @DeleteMapping("/employees/{employeeId}")
-        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<Void>> deleteEmployee(@PathVariable Long employeeId) {
                 employeeService.deleteEmployee(employeeId);
                 LOGGER.info("Employee Deleted Successfully");
@@ -88,8 +125,19 @@ public class EmployeeController {
                                 new Response<>(LocalDateTime.now(), HttpStatus.OK));
         }
 
+        @ApiOperation(value = "Update an employee by id")
+        @ApiImplicitParams({
+                        @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true),
+                        @ApiImplicitParam(name = "employeeDto", dataType = "EmployeeDto", paramType = "body", value = "employee data", required = true)
+        })
+        @ApiResponses({
+                        @ApiResponse(code = 200, message = "OK", response = Response.class),
+                        @ApiResponse(code = 400, message = "Invalid body"),
+                        @ApiResponse(code = 401, message = "Unauthorized"),
+                        @ApiResponse(code = 403, message = "Forbidden"),
+                        @ApiResponse(code = 404, message = "Employee not found")
+        })
         @PutMapping("/employees/{employeeId}")
-        // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
         public ResponseEntity<Response<EmployeeDto>> updateEmployee(
                         @RequestBody @Valid EmployeeDto employeeDto,
                         @PathVariable Long employeeId) {

@@ -49,7 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> employees;
         if (page.isPresent()) {
             // first page is 0 so we substract 1
-            Pageable pageable = PageRequest.of(page.get() - 1, pageSize);
+            Pageable pageable = PageRequest.of(page.get(), pageSize);
             employees = employeeRepository.findAll(pageable)
                     .getContent();
         } else {
