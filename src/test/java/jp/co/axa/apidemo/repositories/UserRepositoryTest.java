@@ -14,35 +14,52 @@ import com.google.common.collect.Lists;
 import jp.co.axa.apidemo.entities.User;
 import jp.co.axa.apidemo.enumeration.UserRole;
 
+/**
+ * Test class for UserRepository to test custom request
+ * 
+ * Using DataJpaTest to create in memory DB and related application context for
+ * this test scope
+ * 
+ * @author Arthur Campos Costa
+ */
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
 
-    @Autowired
-    private UserRepository userRepository;
+        /** user repositoty, subject */
+        @Autowired
+        private UserRepository userRepository;
 
-    @Before
-    public void insertUsers() {
-        userRepository.saveAll(
-                Lists.newArrayList(
-                        new User(
-                                "james",
-                                "admin",
-                                "ROLE_" + UserRole.ADMIN),
-                        new User(
-                                "bob",
-                                "user",
-                                "ROLE_" + UserRole.USER)));
-    }
+        /**
+         * Initialize DB with arbitrary users
+         */
+        @Before
+        public void insertUsers() {
+                userRepository.saveAll(
+                                Lists.newArrayList(
+                                                new User(
+                                                                "james",
+                                                                "admin",
+                                                                "ROLE_" + UserRole.ADMIN),
+                                                new User(
+                                                                "bob",
+                                                                "user",
+                                                                "ROLE_" + UserRole.USER)));
+        }
 
-    @Test
-    public void findByUsernameTest() {
-        User user = userRepository.findByUsername("james")
-                .get();
+        /**
+         * Test findByUsername query
+         */
+        @Test
+        public void findByUsernameTest() {
+                // test
+                User user = userRepository.findByUsername("james")
+                                .get();
 
-        assertEquals(1L, user.getId().longValue());
-        assertEquals(user.getUsername(), "james");
-        assertEquals(user.getPassword(), "admin");
-        assertEquals(user.getRole(), "ROLE_ADMIN");
-    }
+                // assert
+                assertEquals(1L, user.getId().longValue());
+                assertEquals(user.getUsername(), "james");
+                assertEquals(user.getPassword(), "admin");
+                assertEquals(user.getRole(), "ROLE_ADMIN");
+        }
 }

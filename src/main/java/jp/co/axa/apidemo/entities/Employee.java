@@ -11,6 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Employee JPA entity
+ * 
+ * @author Arthur Campos Costa
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,16 +23,20 @@ import lombok.NoArgsConstructor;
 @Table(name = "EMPLOYEE")
 public class Employee {
 
+    /** id */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "EMPLOYEE_NAME")
+    /** name, not null constraint */
+    @Column(name = "EMPLOYEE_NAME", nullable = false)
     private String name;
 
-    @Column(name = "EMPLOYEE_SALARY")
+    /** salary, not null constraint */
+    @Column(name = "EMPLOYEE_SALARY", nullable = false)
     private Integer salary;
 
-    @Column(name = "DEPARTMENT")
+    /** department, not null */
+    @Column(name = "EMPLOYEE_DEPARTMENT", nullable = false)
     private String department;
 }

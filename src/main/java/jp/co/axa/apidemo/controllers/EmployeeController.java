@@ -32,18 +32,38 @@ import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.model.Response;
 import jp.co.axa.apidemo.services.EmployeeService;
 
+/**
+ * REST Controller for Employee related operations
+ * 
+ * @author Arthur Campos Costa
+ */
 @RestController
 @RequestMapping("/api/v1")
 public class EmployeeController {
 
+        /** logger */
         private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeController.class);
 
+        /** employee service */
         private final EmployeeService employeeService;
 
+        /**
+         * Constructor
+         * 
+         * @param employeeService employee service
+         */
         public EmployeeController(EmployeeService employeeService) {
                 this.employeeService = employeeService;
         }
 
+        /**
+         * Retrieve a list of employees
+         * 
+         * @param page page number optional
+         * @return 200 Response with subset of employees if page is specified, otherwise
+         *         all
+         *         employees
+         */
         @ApiOperation(value = "Retrieve a list of employees", notes = "Can provide the page number as request parameter")
         @ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "page number with first page being 0")
         @ApiResponses({
@@ -64,6 +84,12 @@ public class EmployeeController {
                                                 ImmutableMap.of("employees", employees)));
         }
 
+        /**
+         * Retrieve an employee by id
+         * 
+         * @param employeeId employee id
+         * @return 200 Response with fetched employee data
+         */
         @ApiOperation(value = "Retrieve an employee by id")
         @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true)
         @ApiResponses({
@@ -84,6 +110,12 @@ public class EmployeeController {
                                                 ImmutableMap.of("employee", employee)));
         }
 
+        /**
+         * Create a new employee
+         * 
+         * @param employeeDto employee input data
+         * @return 201 Response with created employee data (database id is added)
+         */
         @ApiOperation(value = "Create a new employee", notes = "Return created employee data")
         @ApiImplicitParam(name = "employeeDto", dataType = "EmployeeDto", paramType = "body", value = "employee data", required = true)
         @ApiResponses({
@@ -107,6 +139,12 @@ public class EmployeeController {
                                 HttpStatus.CREATED);
         }
 
+        /**
+         * Delete an employee by id
+         * 
+         * @param employeeId employee id
+         * @return 200 Response with empty data
+         */
         @ApiOperation(value = "Delete an employee by id")
         @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true)
         @ApiResponses({
@@ -125,6 +163,13 @@ public class EmployeeController {
                                 new Response<>(LocalDateTime.now(), HttpStatus.OK));
         }
 
+        /**
+         * Update an employee by id
+         * 
+         * @param employeeDto employee data
+         * @param employeeId  employee id
+         * @return 200 Response with updated employee data
+         */
         @ApiOperation(value = "Update an employee by id")
         @ApiImplicitParams({
                         @ApiImplicitParam(name = "employeeId", dataType = "long", paramType = "path", value = "employee id", required = true),

@@ -35,20 +35,38 @@ import com.google.common.collect.Lists;
 import jp.co.axa.apidemo.model.EmployeeDto;
 import jp.co.axa.apidemo.services.EmployeeService;
 
+/**
+ * Test class for EmployeeController
+ * We use WebMvcTest to load Application Context partially for this controller
+ * 
+ * @author Arthur Campos Costa
+ */
 @RunWith(SpringRunner.class)
 // secure = false to prevent loading security context causing userDetail service
 // bean definition error. Deprecated but couldn't find a workaround
 @WebMvcTest(controllers = EmployeeController.class, secure = false)
 public class EmployeeControllerTest {
 
+    /**
+     * mock mvc, allows to perform http operations on our controller and verify
+     * responses
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /** employee service */
     @MockBean
     private EmployeeService employeeService;
 
+    /**
+     * Test get list of employees
+     * 
+     * Verify that 3 employees are returned in the response
+     * @throws Exception exception
+     */
     @Test
     public void getEmployeesTest() throws Exception {
+        // mock
         when(employeeService.retrieveEmployees(Optional.empty()))
             .thenReturn(
                 Lists.newArrayList(
@@ -58,6 +76,7 @@ public class EmployeeControllerTest {
                 )
             );
 
+        // Perform GET request and verify response
         mockMvc.perform(get("/api/v1/employees"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -66,33 +85,53 @@ public class EmployeeControllerTest {
             .andExpect(jsonPath("$.data.employees[1].name", is("employee 2")))
             .andExpect(jsonPath("$.data.employees[2].name", is("employee 3")));
 
+        // verify service called
         verify(employeeService, times(1))
             .retrieveEmployees(Optional.empty());
     }
 
+    /**
+     * Test get employee
+     * 
+     * Verify that a single employee is return in the response
+     * @throws Exception exception
+     */
     @Test
     public void getEmployeeTest() throws Exception {
+        // mock
         when(employeeService.getEmployee(eq(1L)))
             .thenReturn(new EmployeeDto(1L, "employee 1", 1000, "Marketing"));
 
+        // Perform GET request and verify response
         mockMvc.perform(get("/api/v1/employees/1"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.employee.name", is("employee 1")));
 
+        // verify service call
         verify(employeeService, times(1))
             .getEmployee(eq(1L));
     }
 
+    /**
+     * Test save a new employee
+     * 
+     * Verify that the new employee is returned in the response
+     * 
+     * @throws JsonProcessingException if error while converting dto to String
+     * @throws Exception               exception
+     */
     @Test
     public void saveEmployeeTest() throws JsonProcessingException, Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         EmployeeDto employeeDto = new EmployeeDto(1L, "employee 1", 1000, "Marketing");
 
+        // mock
         when(employeeService.saveEmployee(argThat(
                 e -> e.getId() == employeeDto.getId())))
                 .thenReturn(employeeDto);
 
+        // Perform POST request and verify response
         mockMvc.perform(
                 post("/api/v1/employees")
                         .content(objectMapper.writeValueAsString(employeeDto))
@@ -101,32 +140,52 @@ public class EmployeeControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.employee.name", is("employee 1")));
 
+        // verify service call
         verify(employeeService, times(1))
                 .saveEmployee(any(EmployeeDto.class));
     }
 
+    /**
+     * Test delete an existing employee
+     * 
+     * Verify that response data is empty
+     * 
+     * @throws Exception exception
+     */
     @Test
     public void deleteEmployeeTest() throws Exception {
+        // Perform DELETE request and verify response
         mockMvc.perform(delete("/api/v1/employees/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", nullValue()));
 
+        // verify service called
         verify(employeeService, times(1))
                 .deleteEmployee(eq(1L));
     }
 
+    /**
+     * Test update an existing employee
+     * 
+     * Verify that the updated employee is returned in the response
+     * 
+     * @throws JsonProcessingException if error while converting dto to String
+     * @throws Exception               exception
+     */
     @Test
     public void updateEmployeeTest() throws JsonProcessingException, Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         EmployeeDto employeeDto = new EmployeeDto(1L, "employee 1", 1000, "Marketing");
 
+        // mock
         when(employeeService.updateEmployee(
                 eq(1L),
                 argThat(
                         e -> e.getId() == employeeDto.getId())))
                 .thenReturn(employeeDto);
 
+        // perform PUT request and verify response
         mockMvc.perform(
                 put("/api/v1/employees/1")
                         .content(objectMapper.writeValueAsString(employeeDto))
@@ -135,6 +194,7 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.employee.name", is("employee 1")));
 
+        // verify service call
         verify(employeeService, times(1))
                 .updateEmployee(eq(1L), any(EmployeeDto.class));
     }

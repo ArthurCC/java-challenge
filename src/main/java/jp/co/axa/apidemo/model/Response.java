@@ -8,24 +8,46 @@ import org.springframework.http.HttpStatus;
 import lombok.Getter;
 
 /**
- * Immutable generic controller response
+ * Immutable generic custom controller response model.
+ * This is the object being returned as body for every response.
+ * Having a consistant data structure throughout all your endpoint response
+ * makes it easier to use for clients in my experience.
  * 
  * @param <T> response type of data
  */
 @Getter
 public class Response<T> {
+    /** timestamp of the request processing */
     private final LocalDateTime timestamp;
+
+    /** response status code */
     private final int statusCode;
+
+    /** response status */
     private final String statusMessage;
+
+    /** error message, exclusive with data */
     private final String errorMessage;
+
+    /**
+     * output data, exclusive with errorMessage
+     * 
+     * The key is the JSON field containing the queried response, and the value is
+     * the response itself
+     * Possible to return multiple keys though it is not currently used in the
+     * application
+     * 
+     * Example : "employee": {// data}
+     * "employees": [// list of data]
+     */
     private final Map<String, T> data;
 
     /**
      * Response OK constructor
      * 
-     * @param timestamp
-     * @param status
-     * @param data
+     * @param timestamp timestamp
+     * @param status    http status
+     * @param data      data
      */
     public Response(LocalDateTime timestamp, HttpStatus status, Map<String, T> data) {
         this.timestamp = timestamp;
@@ -38,9 +60,9 @@ public class Response<T> {
     /**
      * Response NG constructor
      * 
-     * @param timestamp
-     * @param status
-     * @param errorMessage
+     * @param timestamp    timestamp
+     * @param status       status
+     * @param errorMessage error message
      */
     public Response(LocalDateTime timestamp, HttpStatus status, String errorMessage) {
         this.timestamp = timestamp;
@@ -53,8 +75,8 @@ public class Response<T> {
     /**
      * No content Response
      * 
-     * @param timestamp
-     * @param status
+     * @param timestamp timestamp
+     * @param status    status
      */
     public Response(LocalDateTime timestamp, HttpStatus status) {
         this.timestamp = timestamp;

@@ -17,11 +17,25 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import jp.co.axa.apidemo.exceptions.ResourceNotFoundException;
 import jp.co.axa.apidemo.model.Response;
 
+/**
+ * Global exception handler for our controllers
+ * 
+ * @author Arthur Campos Costa
+ */
 @ControllerAdvice
 public class CustomExceptionHandler {
 
+        /** logger */
         private static final Logger LOGGER = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
+        /**
+         * ResourceNotFoundException handler.
+         * This exception is thrown when an employee was not found
+         * 
+         * @param ex      ResourceNotFoundException
+         * @param request http servlet request
+         * @return ResponseEntity with custom response and status 404
+         */
         @ExceptionHandler(ResourceNotFoundException.class)
         public ResponseEntity<Response<Void>> handleResourceNotFound(ResourceNotFoundException ex,
                         HttpServletRequest request) {
@@ -30,6 +44,14 @@ public class CustomExceptionHandler {
                                 ex, request, HttpStatus.NOT_FOUND, "Resource not found");
         }
 
+        /**
+         * MethodArgumentNotValidException handler.
+         * This exception is thrown when Employee body is invalid.
+         * 
+         * @param ex      MethodArgumentNotValidException
+         * @param request http servlet request
+         * @return ResponseEntity with custom response and status 400
+         */
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Response<Void>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                         HttpServletRequest request) {
@@ -46,6 +68,15 @@ public class CustomExceptionHandler {
                                 ex, request, HttpStatus.BAD_REQUEST, fieldErrorMessages);
         }
 
+        /**
+         * MethodArgumentTypeMismatchException and IllegalArgumentException handler.
+         * These exceptions are thrown when query or path parameters are invalid
+         * 
+         * @param ex      MethodArgumentTypeMismatchException or
+         *                IllegalArgumentException
+         * @param request http servlet request
+         * @return ResponseEntity with custom response and status 400
+         */
         @ExceptionHandler({
                         MethodArgumentTypeMismatchException.class,
                         IllegalArgumentException.class
@@ -57,6 +88,13 @@ public class CustomExceptionHandler {
                                 ex, request, HttpStatus.BAD_REQUEST, "Parameter conversion error");
         }
 
+        /**
+         * Handler for any other unexpected Exception.
+         * 
+         * @param ex      Exception
+         * @param request http servlet request
+         * @return @return ResponseEntity with custom response and status 500
+         */
         @ExceptionHandler(Exception.class)
         public ResponseEntity<Response<Void>> handleException(Exception ex,
                         HttpServletRequest request) {
@@ -65,6 +103,15 @@ public class CustomExceptionHandler {
                                 ex, request, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server error");
         }
 
+        /**
+         * Build custom error response
+         * 
+         * @param ex            exception
+         * @param request       http servlet request
+         * @param httpStatus    http status
+         * @param customMessage custom error message
+         * @return ResponseEntity with custom response
+         */
         private ResponseEntity<Response<Void>> buildErrorResponse(Exception ex,
                         HttpServletRequest request, HttpStatus httpStatus, String customMessage) {
                 String errorMessage = String.format(
