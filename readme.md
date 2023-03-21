@@ -79,7 +79,7 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 #### Running the app
 
 -   Run with `mvn spring-boot:run` or with IDE
--   To run with web security disabled use `mvn spring-boot:run -Dspring-boot.run.arguments=--app.security.enabled=false`. You can also edit the property directly in application.properties file and run the app normally.
+-   To run with web security disabled use `mvn spring-boot:run -Dspring-boot.run.arguments=--app.security.enabled=false`. You can also set the property `app.security.enabled` to `false` in application.properties file and run the app normally.
 
 #### Notes
 
