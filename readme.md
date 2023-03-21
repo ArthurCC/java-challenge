@@ -52,13 +52,13 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 -   Secure endpoints with Spring Security and JPA using http basic
 -   In memory cache for retrieving employees
 -   Swagger documentation
--   JavaDoc and remote site
+-   JavaDoc and documentation site
 -   Split Entity / DTO and handle mapping
 -   Pagination for retrieving list of employees
 -   Custom response model
--   Custom error handling with proper status code
--   Request body validation with Spring
--   Logging instead of System.out
+-   Custom error handling with appropriate status code
+-   Request body validation with @Valid
+-   Use Slf4j for logging instead of System.out
 
 #### What would I have added if I had more time
 
@@ -70,7 +70,7 @@ Application (with the embedded H2 database) is ready to be used ! You can access
 
 #### Problems remaining
 
--   Documenting generic Response type with Swagger
+-   Could not find a solution for documenting generic Response type with Swagger
 -   Swagger UI displaying but generating NoHandlerFound error resulting in error logs in console
 -   Unable to publish site to github with maven-scm-publish-plugin (pushed gh-pages branch manually)
 
